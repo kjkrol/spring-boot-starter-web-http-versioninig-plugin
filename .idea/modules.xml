@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ProjectModuleManager">
+    <modules>
+      <module fileurl="file://$PROJECT_DIR$/api-versioninig.iml" filepath="$PROJECT_DIR$/api-versioninig.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/api-versioninig_main.iml" filepath="$PROJECT_DIR$/.idea/modules/api-versioninig_main.iml" group="api-versioninig" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/api-versioninig_test.iml" filepath="$PROJECT_DIR$/.idea/modules/api-versioninig_test.iml" group="api-versioninig" />
+    </modules>
+  </component>
+</project>
