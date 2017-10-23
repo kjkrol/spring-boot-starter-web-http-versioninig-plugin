@@ -14,19 +14,21 @@ public class ExampleController {
     @GetMapping(path = "/names", produces = APPLICATION_JSON_VALUE)
     @ApiVersion("1.0.0")
     public List<String> getNames() {
-        return asList("Mary", "Joseph");
+        return asList("Adam", "Noe");
     }
 
     @GetMapping(path = "/names", produces = APPLICATION_JSON_VALUE)
-    @ApiVersion("1.0.1")
+    @ApiVersion({ "1.0.1", "1.0.2" })
+    @ApiVersionLatestSupported
     public List<String> getNames1() {
-        return asList("Paul", "John", "Peter");
+        return asList("Abraham", "Joseph", "Moses");
     }
 
     @GetMapping(path = "/names", produces = APPLICATION_JSON_VALUE)
-    @ApiVersion({"1.0.2", ApiVersion.LATEST})
+    @ApiVersion("1.0.3")
+    @ApiVersionLatest
     public List<String> getNames2() {
-        return asList("Noe", "Joseph", "Abraham");
+        return asList("Salomon", "David");
     }
 
 }

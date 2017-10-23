@@ -1,45 +1,70 @@
 package kjkrol.apiversioning;
 
-import org.springframework.lang.Nullable;
-import org.springframework.web.servlet.mvc.condition.HeadersRequestCondition;
+import org.springframework.aop.support.AopUtils;
+import org.springframework.core.MethodIntrospector;
+import org.springframework.util.ClassUtils;
 import org.springframework.web.servlet.mvc.method.RequestMappingInfo;
 import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping;
 
 import java.lang.reflect.Method;
-import java.util.stream.Stream;
-
-import static org.springframework.core.annotation.AnnotationUtils.findAnnotation;
+import java.util.List;
+import java.util.Map;
 
 public class ApiVersionRequestMappingHandlerMapping extends RequestMappingHandlerMapping {
 
+    private final ApiVersioningAnnotationParser apiVersioningAnnotationParser = new ApiVersioningAnnotationParser();
+
     @Override
-    @Nullable
-    protected RequestMappingInfo getMappingForMethod(Method method, Class<?> handlerType) {
-        RequestMappingInfo info = super.getMappingForMethod(method, handlerType);
-        ApiVersion methodAnnotation = findAnnotation(method, ApiVersion.class);
-        if (methodAnnotation != null) {
-            info = requestHeaderApiVersionInfos(methodAnnotation).combine(info);
-        } else {
-            ApiVersion typeAnnotation = findAnnotation(handlerType, ApiVersion.class);
-            if (typeAnnotation != null) {
-                info = requestHeaderApiVersionInfos(typeAnnotation).combine(info);
+    /**
+     * Before modify this method was copy-pasted from {@link AbstractHandlerMethodMapping}
+     * Look for handler methods in a handler.
+     * @param handler the bean name of a handler or a handler instance
+     */
+    protected void detectHandlerMethods(final Object handler) {
+        Class<?> handlerType = (handler instanceof String ?
+                obtainApplicationContext().getType((String) handler) : handler.getClass());
+
+        if (handlerType != null) {
+            final Class<?> userType = ClassUtils.getUserClass(handlerType);
+            Map<Method, RequestMappingInfo> methods = MethodIntrospector.selectMethods(userType,
+                    (MethodIntrospector.MetadataLookup<RequestMappingInfo>) method -> {
+                        try {
+                            return super.getMappingForMethod(method, handlerType);
+                        } catch (Throwable ex) {
+                            throw new IllegalStateException("Invalid mapping on handler class [" +
+                                    userType.getName() + "]: " + method, ex);
+                        }
+                    });
+            Map<Method, List<RequestMappingInfo>> versionedMethods = apiVersioningAnnotationParser.parseVersionAnnotation(methods);
+            if (versionedMethods.isEmpty()) {
+                originalRegistrationProcess(handler, userType, methods);
+            } else {
+                customizedRegistrationProcess(handler, userType, versionedMethods);
             }
         }
-        return info;
     }
 
-    private RequestMappingInfo requestHeaderApiVersionInfos(ApiVersion annotation) {
-        return new RequestMappingInfo(null, null, null,
-                createHeadersRequestCondition(annotation.value()),
-                null, null, null);
+    private void originalRegistrationProcess(final Object handler, final Class<?> userType, Map<Method, RequestMappingInfo> methods) {
+        if (logger.isDebugEnabled()) {
+            logger.debug(methods.size() + " request handler methods found on " + userType + ": " + methods);
+        }
+        for (Map.Entry<Method, RequestMappingInfo> entry : methods.entrySet()) {
+            Method invocableMethod = AopUtils.selectInvocableMethod(entry.getKey(), userType);
+            RequestMappingInfo mapping = entry.getValue();
+            registerHandlerMethod(handler, invocableMethod, mapping);
+        }
     }
 
-    private HeadersRequestCondition createHeadersRequestCondition(String[] versions) {
-        String[] expression = Stream.of(versions)
-                .filter(version -> !version.isEmpty())
-                .map(version -> "X-API-version=" + version)
-                .toArray(String[]::new);
-        return new HeadersRequestCondition(expression);
+    private void customizedRegistrationProcess(final Object handler, final Class<?> userType, Map<Method, List<RequestMappingInfo>> methods) {
+        if (logger.isDebugEnabled()) {
+            logger.debug(methods.size() + " request handler methods found on " + userType + ": " + methods);
+        }
+        for (Map.Entry<Method, List<RequestMappingInfo>> entry : methods.entrySet()) {
+            Method invocableMethod = AopUtils.selectInvocableMethod(entry.getKey(), userType);
+            entry.getValue().forEach(mapping -> {
+                registerHandlerMethod(handler, invocableMethod, mapping);
+            });
+        }
     }
 
 }

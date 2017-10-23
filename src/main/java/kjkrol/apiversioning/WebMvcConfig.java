@@ -7,6 +7,10 @@ import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandl
 @Configuration
 public class WebMvcConfig extends WebMvcConfigurationSupport {
 
+    //TODO: to response with custom header read this ->
+    // https://mtyurt.net/2015/07/20/spring-modify-response-headers-after-processing/
+    // https://stackoverflow.com/questions/46227751/spring-controllers-adding-a-response-header-parameter-called-elapsed-time
+
     @Override
     protected RequestMappingHandlerMapping createRequestMappingHandlerMapping() {
         return new ApiVersionRequestMappingHandlerMapping();
