@@ -1,4 +1,4 @@
-package kjkrol.apiversioning;
+package kjkrol.apiversioning.springframework.web.servlet.mvc.method.annotation;
 
 import org.springframework.web.servlet.mvc.condition.HeadersRequestCondition;
 import org.springframework.web.servlet.mvc.method.RequestMappingInfo;
@@ -15,21 +15,20 @@ import static java.util.Arrays.asList;
 import static java.util.Objects.isNull;
 import static java.util.Objects.nonNull;
 import static java.util.stream.Collectors.toList;
+import static kjkrol.apiversioning.springframework.web.servlet.mvc.method.annotation.ApiVersionHeader.LATEST;
+import static kjkrol.apiversioning.springframework.web.servlet.mvc.method.annotation.ApiVersionHeader.X_API_VERSION;
 import static org.springframework.core.annotation.AnnotationUtils.findAnnotation;
 
 class ApiVersionAnnotationParser {
-
-    private static final String X_API_VERSION = "X-API-version";
-    private static final String LATEST = "latest";
 
     Map<Method, List<RequestMappingInfo>> parseVersionAnnotation(Map<Method, RequestMappingInfo> originalMappings) {
         Map<Method, List<RequestMappingInfo>> result = new HashMap<>();
         originalMappings.entrySet().forEach(entry -> {
             RequestMappingInfo requestMappingInfo = entry.getValue();
             Method method = entry.getKey();
-            registerVersions(requestMappingInfo, method)
+            createMappingForEachVersion(requestMappingInfo, method)
                     .forEach(info -> createOrGetList(result, method).add(info));
-            registerVersionLatestSupported(method, requestMappingInfo)
+            createMappingForVersionSupported(method, requestMappingInfo)
                     .ifPresent(info -> createOrGetList(result, method).add(info));
         });
         return result;
@@ -44,15 +43,9 @@ class ApiVersionAnnotationParser {
         return list;
     }
 
-    private List<RequestMappingInfo> registerVersions(RequestMappingInfo requestMappingInfo, Method method) {
+    private List<RequestMappingInfo> createMappingForEachVersion(RequestMappingInfo requestMappingInfo, Method method) {
         ApiVersion apiVersion = findAnnotation(method, ApiVersion.class);
         ApiVersionLatest apiVersionLatest = findAnnotation(method, ApiVersionLatest.class);
-
-        //        ProducesRequestCondition producesRequestCondition = requestMappingInfo.getProducesCondition();
-        //        String mediaTypes = producesRequestCondition.getProducibleMediaTypes().stream()
-        //                .map(MediaType::toString)
-        //                .reduce("", String::concat);
-
         List<String> versions = new ArrayList<>();
         if (nonNull(apiVersionLatest)) {
             versions.add(LATEST);
@@ -64,19 +57,19 @@ class ApiVersionAnnotationParser {
             return Collections.singletonList(requestMappingInfo);
         }
         return versions.stream()
-                .map(version -> new RequestMappingInfo(
-                        requestMappingInfo.getPatternsCondition(),
-                        requestMappingInfo.getMethodsCondition(),
-                        requestMappingInfo.getParamsCondition(),
-                        new HeadersRequestCondition(X_API_VERSION + "=" + version), // requestMappingInfo.getHeadersCondition()
-                        requestMappingInfo.getConsumesCondition(),
-                        requestMappingInfo.getProducesCondition(), // new ProducesRequestCondition(mediaTypes + "; version=" + version),
-                        null))
+                .map(version -> X_API_VERSION + "=" + version)
+                .map(HeadersRequestCondition::new)
+                .map(headersRequestCondition -> addCustomHeaderToRequestMappingInfo(requestMappingInfo, headersRequestCondition))
                 .collect(toList());
 
     }
 
-    private Optional<RequestMappingInfo> registerVersionLatestSupported(Method method, RequestMappingInfo requestMappingInfo) {
+    private RequestMappingInfo addCustomHeaderToRequestMappingInfo(RequestMappingInfo requestMappingInfo, HeadersRequestCondition headersRequestCondition) {
+        return new RequestMappingInfo(null, null, null, headersRequestCondition, null, null, null)
+                .combine(requestMappingInfo);
+    }
+
+    private Optional<RequestMappingInfo> createMappingForVersionSupported(Method method, RequestMappingInfo requestMappingInfo) {
         ApiVersionSupported annotation = findAnnotation(method, ApiVersionSupported.class);
         if (nonNull(annotation)) {
             return Optional.of(requestMappingInfo);

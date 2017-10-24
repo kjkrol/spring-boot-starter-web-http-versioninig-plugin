@@ -1,4 +1,4 @@
-package kjkrol.apiversioning;
+package kjkrol.apiversioning.springframework.web.servlet.mvc.method.annotation;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.Target;

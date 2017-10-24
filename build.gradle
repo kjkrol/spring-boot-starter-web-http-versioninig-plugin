@@ -1,35 +1,60 @@
-buildscript {
-	ext {
-		springBootVersion = '2.0.0.M5'
-	}
-	repositories {
-		mavenCentral()
-		maven { url "https://repo.spring.io/snapshot" }
-		maven { url "https://repo.spring.io/milestone" }
-	}
-	dependencies {
-		classpath("org.springframework.boot:spring-boot-gradle-plugin:${springBootVersion}")
-	}
-}
-
 apply plugin: 'java'
-apply plugin: 'eclipse'
-apply plugin: 'org.springframework.boot'
-apply plugin: 'io.spring.dependency-management'
+apply plugin: 'groovy'
+apply plugin: 'checkstyle'
 
 group = 'kjkrol'
 version = '0.0.1-SNAPSHOT'
 sourceCompatibility = 1.8
 
 repositories {
-	mavenCentral()
-	maven { url "https://repo.spring.io/snapshot" }
-	maven { url "https://repo.spring.io/milestone" }
+    mavenCentral()
+    maven { url "https://repo.spring.io/snapshot" }
+    maven { url "https://repo.spring.io/milestone" }
 }
 
+configurations {
+    integrationTestCompile.extendsFrom testCompile
+    integrationTestRuntime.extendsFrom testRuntime
+}
 
 dependencies {
-	compile('org.springframework.boot:spring-boot-starter-web')
-	compileOnly('org.projectlombok:lombok')
-	testCompile('org.springframework.boot:spring-boot-starter-test')
+    compile('org.springframework:spring-webmvc:5.0.0.RELEASE')
+    compileOnly('org.projectlombok:lombok:1.16.18')
+    testCompile('org.spockframework:spock-spring:1.1-groovy-2.4')
+    integrationTestCompile('org.springframework.boot:spring-boot-starter-test:2.0.0.M5')
+    integrationTestCompile('org.springframework.boot:spring-boot-starter-web:2.0.0.M5')
+}
+
+sourceSets {
+    integrationTest {
+        groovy.srcDir file('src/test-integration/groovy')
+        java.srcDir file('src/test-integration/java')
+        resources.srcDir file('src/test-integration/resources')
+        compileClasspath = sourceSets.main.output + sourceSets.test.output + configurations.integrationTestCompile
+        runtimeClasspath = output + compileClasspath + configurations.integrationTestRuntime
+    }
+}
+
+task integrationTest(type: Test) {
+    testClassesDirs = sourceSets.integrationTest.output.classesDirs
+    classpath = sourceSets.integrationTest.runtimeClasspath
+    testLogging {
+        exceptionFormat = 'full'
+    }
+}
+
+check.dependsOn integrationTest
+integrationTest.mustRunAfter test
+
+integrationTest {
+    if (project.hasProperty("springProfilesInclude")) {
+        systemProperty("spring.profiles.include", project.properties.springProfilesInclude)
+    }
+    if (project.hasProperty("springCloudConfigUri")) {
+        systemProperty("spring.cloud.config.uri", project.properties.springCloudConfigUri)
+    }
+}
+
+checkstyle {
+    configFile rootProject.file('checkstyle.xml')
 }

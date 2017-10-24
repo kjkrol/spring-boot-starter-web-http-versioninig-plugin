@@ -1,4 +1,4 @@
-package kjkrol.apiversioning;
+package kjkrol.apiversioning.springframework.web.servlet.mvc.method.annotation;
 
 import org.springframework.aop.support.AopUtils;
 import org.springframework.core.MethodIntrospector;
@@ -15,15 +15,13 @@ public class ApiVersionRequestMappingHandlerMapping extends RequestMappingHandle
     private final ApiVersionAnnotationParser apiVersionAnnotationParser = new ApiVersionAnnotationParser();
 
     @Override
-    /**
+    /*
      * Before modify this method was copy-pasted from {@link AbstractHandlerMethodMapping}
      * Look for handler methods in a handler.
      * @param handler the bean name of a handler or a handler instance
      */
     protected void detectHandlerMethods(final Object handler) {
-        Class<?> handlerType = (handler instanceof String ?
-                obtainApplicationContext().getType((String) handler) : handler.getClass());
-
+        Class<?> handlerType = (handler instanceof String ? obtainApplicationContext().getType((String) handler) : handler.getClass());
         if (handlerType != null) {
             final Class<?> userType = ClassUtils.getUserClass(handlerType);
             Map<Method, RequestMappingInfo> methods = MethodIntrospector.selectMethods(userType,
@@ -31,8 +29,7 @@ public class ApiVersionRequestMappingHandlerMapping extends RequestMappingHandle
                         try {
                             return super.getMappingForMethod(method, handlerType);
                         } catch (Throwable ex) {
-                            throw new IllegalStateException("Invalid mapping on handler class [" +
-                                    userType.getName() + "]: " + method, ex);
+                            throw new IllegalStateException("Invalid mapping on handler class [" + userType.getName() + "]: " + method, ex);
                         }
                     });
             Map<Method, List<RequestMappingInfo>> versionedMethods = apiVersionAnnotationParser.parseVersionAnnotation(methods);
