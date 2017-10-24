@@ -19,7 +19,7 @@ public class ExampleController {
 
     @GetMapping(path = "/names", produces = APPLICATION_JSON_VALUE)
     @ApiVersion({ "1.0.1", "1.0.2" })
-    @ApiVersionLatestSupported
+    @ApiVersionSupported
     public List<String> getNames1() {
         return asList("Abraham", "Joseph", "Moses");
     }
@@ -28,7 +28,7 @@ public class ExampleController {
     @ApiVersion("1.0.3")
     @ApiVersionLatest
     public List<String> getNames2() {
-        return asList("Salomon", "David");
+        return asList("Solomon", "David");
     }
 
 }

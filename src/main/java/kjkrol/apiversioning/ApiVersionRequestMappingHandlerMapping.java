@@ -12,7 +12,7 @@ import java.util.Map;
 
 public class ApiVersionRequestMappingHandlerMapping extends RequestMappingHandlerMapping {
 
-    private final ApiVersioningAnnotationParser apiVersioningAnnotationParser = new ApiVersioningAnnotationParser();
+    private final ApiVersionAnnotationParser apiVersionAnnotationParser = new ApiVersionAnnotationParser();
 
     @Override
     /**
@@ -35,7 +35,7 @@ public class ApiVersionRequestMappingHandlerMapping extends RequestMappingHandle
                                     userType.getName() + "]: " + method, ex);
                         }
                     });
-            Map<Method, List<RequestMappingInfo>> versionedMethods = apiVersioningAnnotationParser.parseVersionAnnotation(methods);
+            Map<Method, List<RequestMappingInfo>> versionedMethods = apiVersionAnnotationParser.parseVersionAnnotation(methods);
             if (versionedMethods.isEmpty()) {
                 originalRegistrationProcess(handler, userType, methods);
             } else {

@@ -17,7 +17,7 @@ import static java.util.Objects.nonNull;
 import static java.util.stream.Collectors.toList;
 import static org.springframework.core.annotation.AnnotationUtils.findAnnotation;
 
-class ApiVersioningAnnotationParser {
+class ApiVersionAnnotationParser {
 
     private static final String X_API_VERSION = "X-API-version";
     private static final String LATEST = "latest";
@@ -77,7 +77,7 @@ class ApiVersioningAnnotationParser {
     }
 
     private Optional<RequestMappingInfo> registerVersionLatestSupported(Method method, RequestMappingInfo requestMappingInfo) {
-        ApiVersionLatestSupported annotation = findAnnotation(method, ApiVersionLatestSupported.class);
+        ApiVersionSupported annotation = findAnnotation(method, ApiVersionSupported.class);
         if (nonNull(annotation)) {
             return Optional.of(requestMappingInfo);
         }

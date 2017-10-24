@@ -5,7 +5,7 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurationSupp
 import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping;
 
 @Configuration
-public class WebMvcConfig extends WebMvcConfigurationSupport {
+public class ApiVersionConfiguration extends WebMvcConfigurationSupport {
 
     //TODO: to response with custom header read this ->
     // https://mtyurt.net/2015/07/20/spring-modify-response-headers-after-processing/
