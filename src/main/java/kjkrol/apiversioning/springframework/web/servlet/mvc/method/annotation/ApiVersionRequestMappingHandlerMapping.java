@@ -1,14 +1,16 @@
 package kjkrol.apiversioning.springframework.web.servlet.mvc.method.annotation;
 
-import org.springframework.aop.support.AopUtils;
-import org.springframework.core.MethodIntrospector;
-import org.springframework.util.ClassUtils;
+import org.springframework.core.MethodIntrospector.MetadataLookup;
 import org.springframework.web.servlet.mvc.method.RequestMappingInfo;
 import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping;
 
 import java.lang.reflect.Method;
 import java.util.List;
 import java.util.Map;
+
+import static org.springframework.aop.support.AopUtils.selectInvocableMethod;
+import static org.springframework.core.MethodIntrospector.selectMethods;
+import static org.springframework.util.ClassUtils.getUserClass;
 
 public class ApiVersionRequestMappingHandlerMapping extends RequestMappingHandlerMapping {
 
@@ -23,9 +25,9 @@ public class ApiVersionRequestMappingHandlerMapping extends RequestMappingHandle
     protected void detectHandlerMethods(final Object handler) {
         Class<?> handlerType = (handler instanceof String ? obtainApplicationContext().getType((String) handler) : handler.getClass());
         if (handlerType != null) {
-            final Class<?> userType = ClassUtils.getUserClass(handlerType);
-            Map<Method, RequestMappingInfo> methods = MethodIntrospector.selectMethods(userType,
-                    (MethodIntrospector.MetadataLookup<RequestMappingInfo>) method -> {
+            final Class<?> userType = getUserClass(handlerType);
+            Map<Method, RequestMappingInfo> methods = selectMethods(userType,
+                    (MetadataLookup<RequestMappingInfo>) method -> {
                         try {
                             return super.getMappingForMethod(method, handlerType);
                         } catch (Throwable ex) {
@@ -41,23 +43,23 @@ public class ApiVersionRequestMappingHandlerMapping extends RequestMappingHandle
         }
     }
 
-    private void originalRegistrationProcess(final Object handler, final Class<?> userType, Map<Method, RequestMappingInfo> methods) {
-        logRequestMappingInfoCandidates(userType, methods);
-        for (Map.Entry<Method, RequestMappingInfo> entry : methods.entrySet()) {
-            Method invocableMethod = AopUtils.selectInvocableMethod(entry.getKey(), userType);
-            RequestMappingInfo mapping = entry.getValue();
+    private void originalRegistrationProcess(final Object handler, final Class<?> userType, Map<Method, RequestMappingInfo> methodsAndMappings) {
+        logRequestMappingInfoCandidates(userType, methodsAndMappings);
+        methodsAndMappings.forEach((key, mapping) -> {
+            Method invocableMethod = selectInvocableMethod(key, userType);
             registerHandlerMethod(handler, invocableMethod, mapping);
-        }
+        });
     }
 
-    private void customizedRegistrationProcess(final Object handler, final Class<?> userType, Map<Method, List<RequestMappingInfo>> methods) {
-        logRequestMappingInfoCandidates(userType, methods);
-        for (Map.Entry<Method, List<RequestMappingInfo>> entry : methods.entrySet()) {
-            Method invocableMethod = AopUtils.selectInvocableMethod(entry.getKey(), userType);
-            entry.getValue().forEach(mapping -> {
+    private void customizedRegistrationProcess(final Object handler, final Class<?> userType, Map<Method, List<RequestMappingInfo>> methodsAndMultiMappings) {
+        logRequestMappingInfoCandidates(userType, methodsAndMultiMappings);
+        methodsAndMultiMappings.forEach((method, mappings) -> {
+            Method invocableMethod = selectInvocableMethod(method, userType);
+            mappings.forEach(mapping -> {
                 registerHandlerMethod(handler, invocableMethod, mapping);
             });
-        }
+        });
+
     }
 
     private void logRequestMappingInfoCandidates(final Class<?> userType, Map<Method, ?> methods) {
