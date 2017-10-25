@@ -21,7 +21,7 @@ import static org.springframework.core.annotation.AnnotationUtils.findAnnotation
 
 class ApiVersionAnnotationParser {
 
-    Map<Method, List<RequestMappingInfo>> parseVersionAnnotation(Map<Method, RequestMappingInfo> originalMappings) {
+    Map<Method, List<RequestMappingInfo>> parseApiVersioningAnnotations(Map<Method, RequestMappingInfo> originalMappings) {
         Map<Method, List<RequestMappingInfo>> result = new HashMap<>();
         originalMappings.entrySet().forEach(entry -> {
             RequestMappingInfo requestMappingInfo = entry.getValue();

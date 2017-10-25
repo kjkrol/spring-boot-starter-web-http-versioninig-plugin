@@ -14,7 +14,7 @@ import java.lang.annotation.Annotation;
 import static kjkrol.apiversioning.springframework.web.servlet.mvc.method.annotation.ApiVersionHeader.X_API_VERSION;
 
 @ControllerAdvice
-public class ApiVersionResponseHeaderModifierAdvice implements ResponseBodyAdvice<Object> {
+class ApiVersionResponseHeaderModifierAdvice implements ResponseBodyAdvice<Object> {
 
     @Override
     public boolean supports(MethodParameter returnType, Class<? extends HttpMessageConverter<?>> converterType) {

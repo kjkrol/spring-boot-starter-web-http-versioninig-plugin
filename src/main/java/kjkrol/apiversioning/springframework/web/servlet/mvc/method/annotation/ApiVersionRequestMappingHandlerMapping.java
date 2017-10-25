@@ -32,7 +32,7 @@ public class ApiVersionRequestMappingHandlerMapping extends RequestMappingHandle
                             throw new IllegalStateException("Invalid mapping on handler class [" + userType.getName() + "]: " + method, ex);
                         }
                     });
-            Map<Method, List<RequestMappingInfo>> versionedMethods = apiVersionAnnotationParser.parseVersionAnnotation(methods);
+            Map<Method, List<RequestMappingInfo>> versionedMethods = apiVersionAnnotationParser.parseApiVersioningAnnotations(methods);
             if (versionedMethods.isEmpty()) {
                 originalRegistrationProcess(handler, userType, methods);
             } else {
@@ -42,9 +42,7 @@ public class ApiVersionRequestMappingHandlerMapping extends RequestMappingHandle
     }
 
     private void originalRegistrationProcess(final Object handler, final Class<?> userType, Map<Method, RequestMappingInfo> methods) {
-        if (logger.isDebugEnabled()) {
-            logger.debug(methods.size() + " request handler methods found on " + userType + ": " + methods);
-        }
+        logRequestMappingInfoCandidates(userType, methods);
         for (Map.Entry<Method, RequestMappingInfo> entry : methods.entrySet()) {
             Method invocableMethod = AopUtils.selectInvocableMethod(entry.getKey(), userType);
             RequestMappingInfo mapping = entry.getValue();
@@ -53,14 +51,18 @@ public class ApiVersionRequestMappingHandlerMapping extends RequestMappingHandle
     }
 
     private void customizedRegistrationProcess(final Object handler, final Class<?> userType, Map<Method, List<RequestMappingInfo>> methods) {
-        if (logger.isDebugEnabled()) {
-            logger.debug(methods.size() + " request handler methods found on " + userType + ": " + methods);
-        }
+        logRequestMappingInfoCandidates(userType, methods);
         for (Map.Entry<Method, List<RequestMappingInfo>> entry : methods.entrySet()) {
             Method invocableMethod = AopUtils.selectInvocableMethod(entry.getKey(), userType);
             entry.getValue().forEach(mapping -> {
                 registerHandlerMethod(handler, invocableMethod, mapping);
             });
+        }
+    }
+
+    private void logRequestMappingInfoCandidates(final Class<?> userType, Map<Method, ?> methods) {
+        if (logger.isDebugEnabled()) {
+            logger.debug(methods.size() + " request handler methods found on " + userType + ": " + methods);
         }
     }
 
