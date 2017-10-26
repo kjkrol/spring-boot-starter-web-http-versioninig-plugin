@@ -8,7 +8,18 @@ This tiny spring-webmvc plugin allows to versioning exposed REST API and accessi
 Server side
 -----------
 
-On server side it provides tree cusotmized annotations:
+Configuration:
+Two provided configuration classes:
+- ApiVersionConfiguration
+- ApiVersionResponseHeaderModifierAdvice
+
+should be visible for spring **ComponentScan**. It can be done like that:
+```
+@SpringBootApplication(scanBasePackageClasses = {ApiVersionConfiguration.class, 
+    ExampleController.class, ApiVersionResponseHeaderModifierAdvice.class})
+```
+
+To enable versioning for exposed Rest controller methods the following annotation should be used:
 
 annotation           | description
 -------------------- | ------------------------------------------------------
@@ -43,7 +54,6 @@ class ExampleController {
 
 }
 ```
-It provide possibility to place information about API version to special HTTP request headers.
 
 Client side
 -----------
