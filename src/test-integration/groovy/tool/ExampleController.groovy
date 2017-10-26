@@ -15,7 +15,7 @@ class ExampleController {
     @GetMapping(path = "/names", produces = APPLICATION_JSON_VALUE)
     @ApiVersion("1.0.0")
     List<String> getNames1() {
-        return asList("Adam", "Noe");
+        return asList("Adam", "Noah");
     }
 
     @GetMapping(path = "/names", produces = APPLICATION_JSON_VALUE)

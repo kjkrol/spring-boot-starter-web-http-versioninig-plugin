@@ -53,7 +53,7 @@ class ApiVersionRequestMappingHandlerMappingIntTest extends Specification {
             resultActions.andDo(print())
                     .andExpect(status().isOk())
                     .andExpect(header().stringValues(X_API_VERSION, "1.0.0"))
-                    .andExpect(jsonPath('$', is(["Adam", "Noe"])))
+                    .andExpect(jsonPath('$', is(["Adam", "Noah"])))
     }
 
     def "should execute method annotated with @ApiVersionLatest if 'last' version was passed by X-API-version header"() {
