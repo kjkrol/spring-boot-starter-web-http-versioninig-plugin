@@ -1,6 +1,5 @@
 package kjkrol.apiversioning.springframework.web.servlet.mvc.method.annotation;
 
-import org.springframework.web.servlet.mvc.condition.HeadersRequestCondition;
 import org.springframework.web.servlet.mvc.method.RequestMappingInfo;
 
 import java.lang.reflect.Method;
@@ -14,6 +13,8 @@ import static java.lang.String.format;
 import static java.util.Arrays.asList;
 import static java.util.Collections.singletonList;
 import static java.util.Objects.nonNull;
+import static java.util.Optional.empty;
+import static java.util.Optional.of;
 import static java.util.stream.Collectors.toList;
 import static kjkrol.apiversioning.springframework.web.servlet.mvc.method.annotation.ApiVersionHeader.LATEST;
 import static kjkrol.apiversioning.springframework.web.servlet.mvc.method.annotation.ApiVersionHeader.X_API_VERSION;
@@ -53,7 +54,7 @@ class ApiVersionAnnotationParser {
         }
         return versions.stream()
                 .map(version -> format(X_API_VERSION_HEADER_PATTERN, version))
-                .map(HeadersRequestCondition::new)
+                .map(ApiVersionHeadersRequestCondition::new)
                 .map(headersRequestCondition -> new RequestMappingInfo(requestMappingInfo, headersRequestCondition))
                 .collect(toList());
     }
@@ -61,8 +62,8 @@ class ApiVersionAnnotationParser {
     private Optional<RequestMappingInfo> createMappingForVersionSupported(Method method, RequestMappingInfo requestMappingInfo) {
         ApiVersionSupported annotation = findAnnotation(method, ApiVersionSupported.class);
         if (nonNull(annotation)) {
-            return Optional.of(requestMappingInfo);
+            return of(new RequestMappingInfo(requestMappingInfo, new ApiVersionHeadersRequestCondition()));
         }
-        return Optional.empty();
+        return empty();
     }
 }

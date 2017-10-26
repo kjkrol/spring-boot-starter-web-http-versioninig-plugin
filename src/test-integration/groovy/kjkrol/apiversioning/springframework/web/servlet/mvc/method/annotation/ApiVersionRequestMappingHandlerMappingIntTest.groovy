@@ -19,6 +19,7 @@ import static kjkrol.apiversioning.springframework.web.servlet.mvc.method.annota
 import static org.hamcrest.Matchers.is
 import static org.springframework.http.MediaType.APPLICATION_JSON
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
@@ -86,5 +87,21 @@ class ApiVersionRequestMappingHandlerMappingIntTest extends Specification {
                     .andExpect(status().isOk())
                     .andExpect(header().stringValues(X_API_VERSION, '1.0.1, 1.0.2'))
                     .andExpect(jsonPath('$', is(["Abraham", "Joseph", "Moses"])))
+    }
+
+    def "should response with HTTP 404 status if requested version does not exists"() {
+        given:
+            MockHttpServletRequestBuilder request = MockMvcRequestBuilders
+                    .get("/names")
+                    .header(X_API_VERSION, "x.x.x")
+                    .accept(APPLICATION_JSON)
+
+        when:
+            ResultActions resultActions = mockMvc.perform(request)
+
+        then:
+            resultActions.andDo(print())
+                    .andExpect(status().isNotFound())
+                    .andExpect(content().string(""));
     }
 }
