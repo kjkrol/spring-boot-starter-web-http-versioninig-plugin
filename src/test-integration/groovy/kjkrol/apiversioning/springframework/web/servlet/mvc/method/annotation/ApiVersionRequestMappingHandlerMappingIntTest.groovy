@@ -89,7 +89,7 @@ class ApiVersionRequestMappingHandlerMappingIntTest extends Specification {
                     .andExpect(jsonPath('$', is(["Abraham", "Joseph", "Moses"])))
     }
 
-    def "should response with HTTP 404 status if requested version does not exists"() {
+    def "should respond with HTTP 404 status if requested version does not exists"() {
         given:
             MockHttpServletRequestBuilder request = MockMvcRequestBuilders
                     .get("/names")
