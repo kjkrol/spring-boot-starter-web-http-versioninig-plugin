@@ -3,6 +3,7 @@ package kjkrol.apiversioning.springframework.web.servlet.mvc.method.annotation;
 import org.springframework.lang.Nullable;
 import org.springframework.web.servlet.mvc.condition.AbstractRequestCondition;
 import org.springframework.web.servlet.mvc.condition.HeadersRequestCondition;
+import org.springframework.web.servlet.mvc.condition.NameValueExpression;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.Collection;
@@ -24,7 +25,7 @@ class ApiVersionHeadersRequestCondition extends AbstractRequestCondition<ApiVers
     }
 
     @Override
-    protected Collection<?> getContent() {
+    protected Collection<NameValueExpression<String>> getContent() {
         return headersRequestCondition.getExpressions();
     }
 
