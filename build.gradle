@@ -1,6 +1,7 @@
 apply plugin: 'java'
 apply plugin: 'groovy'
 apply plugin: 'checkstyle'
+apply plugin: 'jacoco'
 
 group = 'kjkrol'
 version = '0.0.1-SNAPSHOT'
@@ -44,6 +45,7 @@ task integrationTest(type: Test) {
 
 check.dependsOn integrationTest
 integrationTest.mustRunAfter test
+check.dependsOn jacocoTestReport
 
 integrationTest {
     if (project.hasProperty("springProfilesInclude")) {
@@ -56,4 +58,18 @@ integrationTest {
 
 checkstyle {
     configFile rootProject.file('checkstyle.xml')
+}
+
+jacocoTestReport {
+    group = "Reporting"
+    reports {
+        xml.enabled true
+        csv.enabled false
+        html.destination file("${buildDir}/reports/coverage")
+    }
+    dependsOn test
+}
+
+task wrapper(type: Wrapper) {
+    gradleVersion = '4.2.1'
 }
