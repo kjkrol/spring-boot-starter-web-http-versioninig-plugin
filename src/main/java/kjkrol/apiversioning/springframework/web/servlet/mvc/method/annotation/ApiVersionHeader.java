@@ -1,9 +1,9 @@
 package kjkrol.apiversioning.springframework.web.servlet.mvc.method.annotation;
 
-import lombok.experimental.UtilityClass;
+public final class ApiVersionHeader {
 
-@UtilityClass
-public class ApiVersionHeader {
+    private ApiVersionHeader() {
+    }
 
     public static final String X_API_VERSION = "X-API-version";
 

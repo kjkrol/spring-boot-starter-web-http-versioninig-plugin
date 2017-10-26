@@ -9,12 +9,11 @@ import org.springframework.http.server.ServerHttpResponse;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseBodyAdvice;
 
-import java.lang.annotation.Annotation;
-
+import static java.util.Objects.nonNull;
 import static kjkrol.apiversioning.springframework.web.servlet.mvc.method.annotation.ApiVersionHeader.X_API_VERSION;
 
 @ControllerAdvice
-class ApiVersionResponseHeaderModifierAdvice implements ResponseBodyAdvice<Object> {
+public class ApiVersionResponseHeaderModifierAdvice implements ResponseBodyAdvice<Object> {
 
     @Override
     public boolean supports(MethodParameter returnType, Class<? extends HttpMessageConverter<?>> converterType) {
@@ -24,10 +23,10 @@ class ApiVersionResponseHeaderModifierAdvice implements ResponseBodyAdvice<Objec
     @Override
     public Object beforeBodyWrite(Object body, MethodParameter returnType, MediaType selectedContentType,
             Class<? extends HttpMessageConverter<?>> selectedConverterType, ServerHttpRequest request, ServerHttpResponse response) {
-        for (Annotation annotation : returnType.getMethod().getDeclaredAnnotations()) {
-            if (annotation.annotationType().equals(ApiVersion.class)) {
-                String[] array = ((ApiVersion) annotation).value();
-                String xApiVersionHeaderStr = String.join(", ", array);
+        if (nonNull(returnType.getMethod())) {
+            ApiVersion apiVersion = returnType.getMethod().getAnnotation(ApiVersion.class);
+            if (nonNull(apiVersion)) {
+                String xApiVersionHeaderStr = String.join(", ", apiVersion.value());
                 response.getHeaders().add(X_API_VERSION, xApiVersionHeaderStr);
             }
         }

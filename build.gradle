@@ -1,6 +1,7 @@
 apply plugin: 'java'
 apply plugin: 'groovy'
 apply plugin: 'checkstyle'
+apply plugin: 'jacoco'
 
 group = 'kjkrol'
 version = '0.0.1-SNAPSHOT'
@@ -19,7 +20,7 @@ configurations {
 
 dependencies {
     compile('org.springframework:spring-webmvc:5.0.0.RELEASE')
-    compileOnly('org.projectlombok:lombok:1.16.18')
+    compileOnly('javax.servlet:javax.servlet-api:4.0.0')
     testCompile('org.spockframework:spock-spring:1.1-groovy-2.4')
     integrationTestCompile('org.springframework.boot:spring-boot-starter-test:2.0.0.M5')
     integrationTestCompile('org.springframework.boot:spring-boot-starter-web:2.0.0.M5')
@@ -45,6 +46,7 @@ task integrationTest(type: Test) {
 
 check.dependsOn integrationTest
 integrationTest.mustRunAfter test
+check.dependsOn jacocoTestReport
 
 integrationTest {
     if (project.hasProperty("springProfilesInclude")) {
@@ -57,4 +59,18 @@ integrationTest {
 
 checkstyle {
     configFile rootProject.file('checkstyle.xml')
+}
+
+jacocoTestReport {
+    group = "Reporting"
+    reports {
+        xml.enabled true
+        csv.enabled false
+        html.destination file("${buildDir}/reports/coverage")
+    }
+    dependsOn test
+}
+
+task wrapper(type: Wrapper) {
+    gradleVersion = '4.2.1'
 }
