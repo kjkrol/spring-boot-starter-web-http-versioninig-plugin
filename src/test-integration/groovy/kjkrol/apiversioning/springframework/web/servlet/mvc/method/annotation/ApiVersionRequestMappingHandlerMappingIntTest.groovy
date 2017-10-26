@@ -14,8 +14,8 @@ import org.springframework.web.context.WebApplicationContext
 import spock.lang.Specification
 import tool.ApiVersioningApplication
 
-import static ApiVersionHeader.LATEST
-import static ApiVersionHeader.X_API_VERSION
+import static kjkrol.apiversioning.springframework.web.servlet.mvc.method.annotation.ApiVersionHeader.LATEST
+import static kjkrol.apiversioning.springframework.web.servlet.mvc.method.annotation.ApiVersionHeader.X_API_VERSION
 import static org.hamcrest.Matchers.is
 import static org.springframework.http.MediaType.APPLICATION_JSON
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print
