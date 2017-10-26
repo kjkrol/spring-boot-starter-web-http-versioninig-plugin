@@ -17,12 +17,12 @@ import static java.util.Optional.empty;
 import static java.util.Optional.of;
 import static java.util.stream.Collectors.toList;
 import static kjkrol.apiversioning.springframework.web.servlet.mvc.method.annotation.ApiVersionHeader.LATEST;
-import static kjkrol.apiversioning.springframework.web.servlet.mvc.method.annotation.ApiVersionHeader.X_API_VERSION;
+import static kjkrol.apiversioning.springframework.web.servlet.mvc.method.annotation.ApiVersionHeader.HEADER_NAME;
 import static org.springframework.core.annotation.AnnotationUtils.findAnnotation;
 
 class ApiVersionAnnotationParser {
 
-    private static final String X_API_VERSION_HEADER_PATTERN = X_API_VERSION + "=%s";
+    private static final String X_API_VERSION_HEADER_PATTERN = HEADER_NAME + "=%s";
 
     Map<Method, List<RequestMappingInfo>> parseApiVersioningAnnotations(Map<Method, RequestMappingInfo> originalMappings) {
         Map<Method, List<RequestMappingInfo>> result = new HashMap<>();

@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseBodyAdvice;
 
 import static java.util.Objects.nonNull;
-import static kjkrol.apiversioning.springframework.web.servlet.mvc.method.annotation.ApiVersionHeader.X_API_VERSION;
+import static kjkrol.apiversioning.springframework.web.servlet.mvc.method.annotation.ApiVersionHeader.HEADER_NAME;
 
 @ControllerAdvice
 public class ApiVersionResponseHeaderModifierAdvice implements ResponseBodyAdvice<Object> {
@@ -27,7 +27,7 @@ public class ApiVersionResponseHeaderModifierAdvice implements ResponseBodyAdvic
             ApiVersion apiVersion = returnType.getMethod().getAnnotation(ApiVersion.class);
             if (nonNull(apiVersion)) {
                 String xApiVersionHeaderStr = String.join(", ", apiVersion.value());
-                response.getHeaders().add(X_API_VERSION, xApiVersionHeaderStr);
+                response.getHeaders().add(HEADER_NAME, xApiVersionHeaderStr);
             }
         }
         return body;

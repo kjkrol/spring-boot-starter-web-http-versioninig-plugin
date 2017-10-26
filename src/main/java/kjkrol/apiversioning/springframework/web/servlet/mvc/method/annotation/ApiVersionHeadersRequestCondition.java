@@ -10,7 +10,7 @@ import java.util.Collection;
 
 import static java.util.Objects.isNull;
 import static java.util.Objects.nonNull;
-import static kjkrol.apiversioning.springframework.web.servlet.mvc.method.annotation.ApiVersionHeader.X_API_VERSION;
+import static kjkrol.apiversioning.springframework.web.servlet.mvc.method.annotation.ApiVersionHeader.HEADER_NAME;
 
 class ApiVersionHeadersRequestCondition extends AbstractRequestCondition<ApiVersionHeadersRequestCondition> {
 
@@ -47,7 +47,7 @@ class ApiVersionHeadersRequestCondition extends AbstractRequestCondition<ApiVers
         if (isNull(headersRequestCondition)) {
             return null;
         }
-        if (nonNull(request.getHeader(X_API_VERSION)) && getContent().isEmpty()) {
+        if (nonNull(request.getHeader(HEADER_NAME)) && getContent().isEmpty()) {
             return null;
         }
         return this;

@@ -15,7 +15,7 @@ import spock.lang.Specification
 import tool.ApiVersioningApplication
 
 import static kjkrol.apiversioning.springframework.web.servlet.mvc.method.annotation.ApiVersionHeader.LATEST
-import static kjkrol.apiversioning.springframework.web.servlet.mvc.method.annotation.ApiVersionHeader.X_API_VERSION
+import static kjkrol.apiversioning.springframework.web.servlet.mvc.method.annotation.ApiVersionHeader.HEADER_NAME
 import static org.hamcrest.Matchers.is
 import static org.springframework.http.MediaType.APPLICATION_JSON
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print
@@ -44,7 +44,7 @@ class ApiVersionRequestMappingHandlerMappingIntTest extends Specification {
             MockHttpServletRequestBuilder request = MockMvcRequestBuilders
                     .get("/names")
                     .accept(APPLICATION_JSON)
-                    .header(X_API_VERSION, "1.0.0")
+                    .header(HEADER_NAME, "1.0.0")
 
         when:
             ResultActions resultActions = mockMvc.perform(request)
@@ -52,7 +52,7 @@ class ApiVersionRequestMappingHandlerMappingIntTest extends Specification {
         then:
             resultActions.andDo(print())
                     .andExpect(status().isOk())
-                    .andExpect(header().stringValues(X_API_VERSION, "1.0.0"))
+                    .andExpect(header().stringValues(HEADER_NAME, "1.0.0"))
                     .andExpect(jsonPath('$', is(["Adam", "Noah"])))
     }
 
@@ -61,7 +61,7 @@ class ApiVersionRequestMappingHandlerMappingIntTest extends Specification {
             MockHttpServletRequestBuilder request = MockMvcRequestBuilders
                     .get("/names")
                     .accept(APPLICATION_JSON)
-                    .header(X_API_VERSION, LATEST)
+                    .header(HEADER_NAME, LATEST)
 
         when:
             ResultActions resultActions = mockMvc.perform(request)
@@ -69,7 +69,7 @@ class ApiVersionRequestMappingHandlerMappingIntTest extends Specification {
         then:
             resultActions.andDo(print())
                     .andExpect(status().isOk())
-                    .andExpect(header().stringValues(X_API_VERSION, "1.0.3"))
+                    .andExpect(header().stringValues(HEADER_NAME, "1.0.3"))
                     .andExpect(jsonPath('$', is(["Solomon", "David"])))
     }
 
@@ -85,7 +85,7 @@ class ApiVersionRequestMappingHandlerMappingIntTest extends Specification {
         then:
             resultActions.andDo(print())
                     .andExpect(status().isOk())
-                    .andExpect(header().stringValues(X_API_VERSION, '1.0.1, 1.0.2'))
+                    .andExpect(header().stringValues(HEADER_NAME, '1.0.1, 1.0.2'))
                     .andExpect(jsonPath('$', is(["Abraham", "Joseph", "Moses"])))
     }
 
@@ -93,7 +93,7 @@ class ApiVersionRequestMappingHandlerMappingIntTest extends Specification {
         given:
             MockHttpServletRequestBuilder request = MockMvcRequestBuilders
                     .get("/names")
-                    .header(X_API_VERSION, "x.x.x")
+                    .header(HEADER_NAME, "x.x.x")
                     .accept(APPLICATION_JSON)
 
         when:
