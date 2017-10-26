@@ -7,6 +7,7 @@ import org.springframework.web.servlet.mvc.condition.HeadersRequestCondition;
 import javax.servlet.http.HttpServletRequest;
 import java.util.Collection;
 
+import static java.util.Objects.isNull;
 import static java.util.Objects.nonNull;
 import static kjkrol.apiversioning.springframework.web.servlet.mvc.method.annotation.ApiVersionHeader.X_API_VERSION;
 
@@ -42,13 +43,13 @@ class ApiVersionHeadersRequestCondition extends AbstractRequestCondition<ApiVers
     @Override
     public ApiVersionHeadersRequestCondition getMatchingCondition(HttpServletRequest request) {
         HeadersRequestCondition headersRequestCondition = this.headersRequestCondition.getMatchingCondition(request);
+        if (isNull(headersRequestCondition)) {
+            return null;
+        }
         if (nonNull(request.getHeader(X_API_VERSION)) && getContent().isEmpty()) {
             return null;
         }
-        if (nonNull(headersRequestCondition)) {
-            return this;
-        }
-        return null;
+        return this;
     }
 
     @Override
