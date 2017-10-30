@@ -15,8 +15,7 @@ Two provided configuration classes:
 
 should be visible for spring **ComponentScan**. It can be done like that:
 ```
-@SpringBootApplication(scanBasePackageClasses = {ApiVersionConfiguration.class, 
-    ExampleController.class, ApiVersionResponseHeaderModifierAdvice.class})
+@SpringBootApplication(scanBasePackageClasses = {ApiVersionConfiguration.class, ApiVersionResponseHeaderModifierAdvice.class})
 ```
 
 To enable versioning for exposed Rest controller methods the following annotation should be used:
