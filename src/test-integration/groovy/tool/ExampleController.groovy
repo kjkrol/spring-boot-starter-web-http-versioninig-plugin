@@ -32,4 +32,9 @@ class ExampleController {
         return asList("Solomon", "David");
     }
 
+    @GetMapping(path = "/apple", produces = APPLICATION_JSON_VALUE)
+    List<String> getNames4() {
+        return asList("Apple");
+    }
+
 }
