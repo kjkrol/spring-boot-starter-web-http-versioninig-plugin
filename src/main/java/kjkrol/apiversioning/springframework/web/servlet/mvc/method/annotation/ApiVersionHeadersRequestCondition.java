@@ -48,10 +48,10 @@ class ApiVersionHeadersRequestCondition extends AbstractRequestCondition<ApiVers
     @Nullable
     @Override
     public ApiVersionHeadersRequestCondition getMatchingCondition(HttpServletRequest request) {
-        HeadersRequestCondition headersRequestCondition = this.headersRequestCondition.getMatchingCondition(request);
         if (nonNull(request.getHeader(HEADER_NAME)) && getContent().isEmpty()) {
             return null;
         }
+        HeadersRequestCondition headersRequestCondition = this.headersRequestCondition.getMatchingCondition(request);
         if (isNull(headersRequestCondition)) {
             return null;
         }
