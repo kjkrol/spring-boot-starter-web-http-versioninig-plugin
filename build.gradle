@@ -20,6 +20,7 @@ configurations {
 
 dependencies {
     compile('org.springframework:spring-webmvc:5.0.0.RELEASE')
+    compileOnly('org.springframework.boot:spring-boot-autoconfigure:2.0.0.M5')
     compileOnly('javax.servlet:javax.servlet-api:4.0.0')
     testCompile('org.spockframework:spock-spring:1.1-groovy-2.4')
     integrationTestCompile('org.springframework.boot:spring-boot-starter-test:2.0.0.M5')

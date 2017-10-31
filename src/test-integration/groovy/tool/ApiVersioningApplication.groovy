@@ -3,10 +3,8 @@ package tool
 import kjkrol.apiversioning.springframework.web.servlet.mvc.config.ApiVersionResponseHeaderModifierAdvice
 import org.springframework.boot.SpringApplication
 import org.springframework.boot.autoconfigure.SpringBootApplication
-import org.springframework.boot.autoconfigure.web.servlet.WebMvcAutoConfiguration
 
-@SpringBootApplication(scanBasePackageClasses = [ApiVersionResponseHeaderModifierAdvice, ExampleController],
-        exclude = [WebMvcAutoConfiguration])
+@SpringBootApplication(scanBasePackageClasses = [ApiVersionResponseHeaderModifierAdvice, ExampleController])
 class ApiVersioningApplication {
 
     static void main(String[] args) {
