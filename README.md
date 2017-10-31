@@ -1,4 +1,4 @@
-spring-webmvc-api-versioninig-plugin
+spring-boot-starter-web-http-versioninig-plugin
 =============
 
 API versioning for org.springframework.boot:spring-boot-starter-web:5.x using HTTP header
