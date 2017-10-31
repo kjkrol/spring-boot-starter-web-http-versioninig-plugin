@@ -1,9 +1,9 @@
 spring-webmvc-api-versioninig-plugin
 =============
 
-API versioning for org.springframework:spring-webmvc:5.x using HTTP header
+API versioning for org.springframework.boot:spring-boot-starter-web:5.x using HTTP header
 
-This tiny spring-webmvc plugin allows to versioning exposed REST API and accessing them using customized **X-API-version** HTTP headers.
+This tiny spring-boot-starter-web plugin allows to versioning exposed REST API and accessing them using customized **X-API-version** HTTP headers.
 
 Server side
 -----------
