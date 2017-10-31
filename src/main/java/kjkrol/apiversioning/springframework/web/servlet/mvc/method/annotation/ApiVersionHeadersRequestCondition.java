@@ -7,6 +7,8 @@ import org.springframework.web.servlet.mvc.condition.NameValueExpression;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.Collection;
+import java.util.HashSet;
+import java.util.Set;
 
 import static java.util.Objects.isNull;
 import static java.util.Objects.nonNull;
@@ -16,17 +18,20 @@ class ApiVersionHeadersRequestCondition extends AbstractRequestCondition<ApiVers
 
     private final HeadersRequestCondition headersRequestCondition;
 
+    private final Set<NameValueExpression<String>> expressions = new HashSet<>();
+
     ApiVersionHeadersRequestCondition(String... headers) {
-        headersRequestCondition = new HeadersRequestCondition(headers);
+        this(new HeadersRequestCondition(headers));
     }
 
     private ApiVersionHeadersRequestCondition(HeadersRequestCondition headersRequestCondition) {
         this.headersRequestCondition = headersRequestCondition;
+        expressions.addAll(headersRequestCondition.getExpressions());
     }
 
     @Override
     protected Collection<NameValueExpression<String>> getContent() {
-        return headersRequestCondition.getExpressions();
+        return this.expressions;
     }
 
     @Override
@@ -44,10 +49,10 @@ class ApiVersionHeadersRequestCondition extends AbstractRequestCondition<ApiVers
     @Override
     public ApiVersionHeadersRequestCondition getMatchingCondition(HttpServletRequest request) {
         HeadersRequestCondition headersRequestCondition = this.headersRequestCondition.getMatchingCondition(request);
-        if (isNull(headersRequestCondition)) {
+        if (nonNull(request.getHeader(HEADER_NAME)) && getContent().isEmpty()) {
             return null;
         }
-        if (nonNull(request.getHeader(HEADER_NAME)) && getContent().isEmpty()) {
+        if (isNull(headersRequestCondition)) {
             return null;
         }
         return this;
